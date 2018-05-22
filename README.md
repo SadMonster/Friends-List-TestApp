@@ -1,1 +1,1 @@
-# Friends List TestApp
+# Friend List TestApp
