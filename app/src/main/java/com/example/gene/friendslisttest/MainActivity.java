@@ -1,5 +1,7 @@
 package com.example.gene.friendslisttest;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,15 +50,15 @@ public class MainActivity extends AppCompatActivity {
         SRL.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener(){
                     @Override
-                    public void onRefresh() { switchCacheData(true); }
+                    public void onRefresh() { switchCacheData(); }
                 }
         );
 
-        switchCacheData(false);
+        switchCacheData();
     }
 
-    private void switchCacheData (boolean forceOnlineUpdate) {
-        if(Cacher.readCache(URL, getBaseContext()).length() > 1 && !forceOnlineUpdate ) {
+    private void switchCacheData () {
+        if(Cacher.readCache(URL, getBaseContext()).length() > 1 && !isInternetAvailable() ) {
             parseJSON(Cacher.readCache(URL, getBaseContext()));
         } else {
             new GetJSON().execute(URL);
@@ -139,6 +142,17 @@ public class MainActivity extends AppCompatActivity {
             parseJSON(dta.toString());
 
             Cacher.writeCache(dta.toString(),getBaseContext(),url.getPath());
+        }
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
         }
     }
 }
